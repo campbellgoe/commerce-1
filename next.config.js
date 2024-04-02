@@ -22,5 +22,10 @@ module.exports = {
         permanent: true
       }
     ];
+  },
+  env: {
+    SITE_NAME: process.env.SITE_NAME,
+    SHOPIFY_STOREFRONT_ACCESS_TOKEN: process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN,
+    SHOPIFY_STORE_DOMAIN: process.env.SHOPIFY_STORE_DOMAIN
   }
 };
