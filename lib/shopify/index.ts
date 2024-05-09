@@ -1,3 +1,4 @@
+import { secret } from '@aws-amplify/backend';
 import { HIDDEN_PRODUCT_TAG, SHOPIFY_GRAPHQL_API_ENDPOINT, TAGS } from 'lib/constants';
 import { isShopifyError } from 'lib/type-guards';
 import { ensureStartsWith } from 'lib/utils';
@@ -49,18 +50,16 @@ import {
   ShopifyRemoveFromCartOperation,
   ShopifyUpdateCartOperation
 } from './types';
-
 const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, 'https://')
   : '';
 const endpoint = `${domain}${SHOPIFY_GRAPHQL_API_ENDPOINT}`;
 let key = '';
 
-let secretsJson;
 try {
-  if (process.env.secrets) {
-    secretsJson = JSON.parse(process.env.secrets);
-    key = secretsJson.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+  const ssat = secret('SHOPIFY_STOREFRONT_ACCESS_TOKEN');
+  if (ssat) {
+    key = ssat as unknown as string;
   } else {
     key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
   }

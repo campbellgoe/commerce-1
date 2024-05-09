@@ -1,5 +1,6 @@
+// @ts-nocheck
+import { secret } from '@aws-amplify/backend';
 import { ReadonlyURLSearchParams } from 'next/navigation';
-
 export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyURLSearchParams) => {
   const paramsString = params.toString();
   const queryString = `${paramsString.length ? '?' : ''}${paramsString}`;
@@ -18,11 +19,10 @@ export const validateEnvironmentVariables = () => {
   const missingEnvironmentVariables = [] as string[];
 
   requiredEnvironmentVariables.forEach((envVar: any) => {
-    if (!process.env[envVar] && !process.env.secrets?.includes(envVar)) {
+    if (!process.env[envVar] && !secret(envVar)) {
       missingEnvironmentVariables.push(envVar);
     }
   });
-  console.log('secrets:', process.env.secrets);
   if (missingEnvironmentVariables.length) {
     throw new Error(
       `The following environment variables are missing. Your site will not work without them. Read more: https://vercel.com/docs/integrations/shopify#configure-environment-variables\n\n${missingEnvironmentVariables.join(
