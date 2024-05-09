@@ -18,7 +18,7 @@ export const validateEnvironmentVariables = () => {
   const missingEnvironmentVariables = [] as string[];
 
   requiredEnvironmentVariables.forEach((envVar: any) => {
-    if (!process.env[envVar] && !process.env.secrets?.[envVar]) {
+    if (!process.env[envVar] && !process.env.secrets?.includes(envVar)) {
       missingEnvironmentVariables.push(envVar);
     }
   });
