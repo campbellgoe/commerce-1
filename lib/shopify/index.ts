@@ -54,9 +54,19 @@ const domain = process.env.SHOPIFY_STORE_DOMAIN
   ? ensureStartsWith(process.env.SHOPIFY_STORE_DOMAIN, 'https://')
   : '';
 const endpoint = `${domain}${SHOPIFY_GRAPHQL_API_ENDPOINT}`;
-const key =
-  process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN ||
-  (process.env?.secrets as any)?.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
+let key = '';
+
+let secretsJson;
+try {
+  if (process.env.secrets) {
+    secretsJson = JSON.parse(process.env.secrets);
+    key = secretsJson.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+  } else {
+    key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
+  }
+} catch (err) {
+  console.warn('error in parsing env.secrets');
+}
 
 type ExtractVariables<T> = T extends { variables: object } ? T['variables'] : never;
 
