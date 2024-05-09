@@ -22,7 +22,7 @@ export const validateEnvironmentVariables = () => {
       missingEnvironmentVariables.push(envVar);
     }
   });
-
+  console.log('secrets:', process.env.secrets);
   if (missingEnvironmentVariables.length) {
     throw new Error(
       `The following environment variables are missing. Your site will not work without them. Read more: https://vercel.com/docs/integrations/shopify#configure-environment-variables\n\n${missingEnvironmentVariables.join(
