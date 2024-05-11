@@ -1,5 +1,4 @@
 // @ts-nocheck
-import { secret } from '@aws-amplify/backend';
 import { ReadonlyURLSearchParams } from 'next/navigation';
 export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyURLSearchParams) => {
   const paramsString = params.toString();
@@ -11,6 +10,12 @@ export const createUrl = (pathname: string, params: URLSearchParams | ReadonlyUR
 export const ensureStartsWith = (stringToCheck: string, startsWith: string) =>
   stringToCheck.startsWith(startsWith) ? stringToCheck : `${startsWith}${stringToCheck}`;
 
+let secrets = {};
+try {
+  secrets = JSON.parse(process.env.secrets);
+} catch (err) {
+  console.warn('unable to parse secrets');
+}
 export const validateEnvironmentVariables = () => {
   const requiredEnvironmentVariables: string[] = [
     'SHOPIFY_STORE_DOMAIN',
@@ -19,7 +24,7 @@ export const validateEnvironmentVariables = () => {
   const missingEnvironmentVariables = [] as string[];
 
   requiredEnvironmentVariables.forEach((envVar: any) => {
-    if (!process.env[envVar] && !secret(envVar)) {
+    if (!process.env[envVar] && !secrets[envVar]) {
       missingEnvironmentVariables.push(envVar);
     }
   });

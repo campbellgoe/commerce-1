@@ -1,4 +1,3 @@
-import { secret } from '@aws-amplify/backend';
 import { HIDDEN_PRODUCT_TAG, SHOPIFY_GRAPHQL_API_ENDPOINT, TAGS } from 'lib/constants';
 import { isShopifyError } from 'lib/type-guards';
 import { ensureStartsWith } from 'lib/utils';
@@ -57,14 +56,15 @@ const endpoint = `${domain}${SHOPIFY_GRAPHQL_API_ENDPOINT}`;
 let key = '';
 
 try {
-  const ssat = secret('SHOPIFY_STOREFRONT_ACCESS_TOKEN');
-  if (ssat) {
-    key = ssat as unknown as string;
+  if (process.env.secrets) {
+    const secrets = JSON.parse(process.env.secrets);
+    key = secrets.SHOPIFY_STOREFRONT_ACCESS_TOKEN;
   } else {
     key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
   }
 } catch (err) {
   console.warn('error in parsing env.secrets');
+  key = process.env.SHOPIFY_STOREFRONT_ACCESS_TOKEN!;
 }
 
 type ExtractVariables<T> = T extends { variables: object } ? T['variables'] : never;
