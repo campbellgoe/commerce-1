@@ -22,7 +22,6 @@
     "*": "prettier --write --ignore-unknown"
   },
   "dependencies": {
-    "@aws-amplify/backend": "^1.0.0",
     "@headlessui/react": "^1.7.19",
     "@heroicons/react": "^2.1.3",
     "clsx": "^2.1.0",

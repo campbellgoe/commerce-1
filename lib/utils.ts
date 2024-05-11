@@ -16,7 +16,6 @@ try {
 } catch (err) {
   console.warn('unable to parse secrets');
 }
-console.log('secrets:', secrets);
 export const validateEnvironmentVariables = () => {
   const requiredEnvironmentVariables: string[] = [
     'SHOPIFY_STORE_DOMAIN',
