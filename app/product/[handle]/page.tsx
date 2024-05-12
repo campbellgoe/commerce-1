@@ -10,6 +10,7 @@ import { getProduct, getProductRecommendations } from 'lib/shopify';
 import { Image } from 'lib/shopify/types';
 import Link from 'next/link';
 import { Suspense } from 'react';
+import sharp from 'sharp';
 
 export async function generateMetadata({
   params
@@ -49,6 +50,30 @@ export async function generateMetadata({
   };
 }
 
+async function getBlurredImage(src: string) {
+  const res = await fetch(src);
+  const arrayBuffer = await res.arrayBuffer();
+  const image = sharp(arrayBuffer);
+  const resizedImageBuffer = await image
+    .resize(48, 48, {
+      fit: 'inside'
+    })
+    .jpeg()
+    .toBuffer();
+  const imageBase64 = resizedImageBuffer.toString('base64');
+  return 'data:image/jpeg,' + imageBase64;
+}
+async function getImages(images: Image[]) {
+  const withBase64 = images.map(async ({ url, altText }) => {
+    const blurredImage = await getBlurredImage(url);
+    return {
+      src: url,
+      altText,
+      base64Image: blurredImage
+    };
+  });
+  return Promise.allSettled(withBase64);
+}
 export default async function ProductPage({ params }: { params: { handle: string } }) {
   const product = await getProduct(params.handle);
 
@@ -70,6 +95,12 @@ export default async function ProductPage({ params }: { params: { handle: string
       lowPrice: product.priceRange.minVariantPrice.amount
     }
   };
+  const images = (await getImages(product.images))
+    .filter(({ status }) => status === 'fulfilled')
+    .map(({ value }: any) => {
+      return value;
+    });
+  console.log('immages:', images);
 
   return (
     <>
@@ -87,12 +118,7 @@ export default async function ProductPage({ params }: { params: { handle: string
                 <div className="relative aspect-square h-full max-h-[550px] w-full overflow-hidden" />
               }
             >
-              <Gallery
-                images={product.images.map((image: Image) => ({
-                  src: image.url,
-                  altText: image.altText
-                }))}
-              />
+              <Gallery images={images} />
             </Suspense>
           </div>
 

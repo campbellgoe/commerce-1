@@ -38,6 +38,7 @@ export type Image = {
   altText: string;
   width: number;
   height: number;
+  base64Image?: string;
 };
 
 export type Menu = {
